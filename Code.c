@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Structures
+// Structures (unchanged)
 typedef struct {
     int bus_id;
     char bus_name[50];
@@ -28,7 +28,7 @@ typedef struct {
     char reservation_date[20];
 } Reservation;
 
-// Function Prototypes
+// Function Prototypes (MODIFIED: Added getBusDetails)
 void adminMenu();
 void passengerMenu(int user_id);
 void addBus();
@@ -42,9 +42,14 @@ void saveReservation(Reservation reservation);
 int generateReservationID();
 int generateUserID();
 int isBusAvailable(int bus_id);
-void updateBusAvailability(int bus_id, int seat_number, int increment);
+void updateBusAvailability(int bus_id, int increment);
+int isSeatAlreadyReserved(int bus_id, int seat_number, char *date);
+int isValidSeatNumber(int bus_id, int seat_number);
+// NEW PROTOYPE
+void getBusDetails(int bus_id, char *bus_name, char *route, char *dep_time, char *arr_time);
 
-// Main Function
+
+// Main Function (unchanged)
 int main() {
     int choice, user_id;
     char email[50], password[20];
@@ -87,7 +92,7 @@ int main() {
     return 0;
 }
 
-// Admin Menu
+// Admin Menu (unchanged)
 void adminMenu() {
     int choice;
 
@@ -114,7 +119,7 @@ void adminMenu() {
     }
 }
 
-// Passenger Menu
+// Passenger Menu (unchanged)
 void passengerMenu(int user_id) {
     int choice;
 
@@ -145,29 +150,44 @@ void passengerMenu(int user_id) {
     }
 }
 
-// Add Bus
+// Add Bus (unchanged from your last provided code, includes input fixes)
 void addBus() {
     Bus bus;
+    int c;
+
+    // Clear buffer before first scanf
+    while ((c = getchar()) != '\n' && c != EOF);
 
     printf("Enter Bus ID: ");
-    scanf("%d", &bus.bus_id);
+    if (scanf("%d", &bus.bus_id) != 1) return;
+    while ((c = getchar()) != '\n' && c != EOF); // Clear after scanf
+
     printf("Enter Bus Name: ");
-    scanf("%s", bus.bus_name);
+    fgets(bus.bus_name, sizeof(bus.bus_name), stdin);
+    bus.bus_name[strcspn(bus.bus_name, "\n")] = 0; // Remove newline
+
     printf("Enter Route: ");
-    scanf("%s", bus.route);
-    printf("Enter Total Seats: ");
-    scanf("%d", &bus.total_seats);
+    fgets(bus.route, sizeof(bus.route), stdin);
+    bus.route[strcspn(bus.route, "\n")] = 0; // Remove newline
+    
+    printf("Enter Total Seats (e.g., 50): "); 
+    if (scanf("%d", &bus.total_seats) != 1) return;
     bus.available_seats = bus.total_seats;
-    printf("Enter Departure Time: ");
-    scanf("%s", bus.departure_time);
-    printf("Enter Arrival Time: ");
-    scanf("%s", bus.arrival_time);
+    while ((c = getchar()) != '\n' && c != EOF); // Clear after scanf
+
+    printf("Enter Departure Time (e.g., 10:00AM): ");
+    fgets(bus.departure_time, sizeof(bus.departure_time), stdin);
+    bus.departure_time[strcspn(bus.departure_time, "\n")] = 0;
+
+    printf("Enter Arrival Time (e.g., 03:00PM): ");
+    fgets(bus.arrival_time, sizeof(bus.arrival_time), stdin);
+    bus.arrival_time[strcspn(bus.arrival_time, "\n")] = 0;
 
     saveBus(bus);
     printf("Bus added successfully!\n");
 }
 
-// Save Bus to File
+// Save Bus to File (unchanged)
 void saveBus(Bus bus) {
     FILE *file = fopen("buses.dat", "ab");
     if (!file) {
@@ -178,7 +198,7 @@ void saveBus(Bus bus) {
     fclose(file);
 }
 
-// View Buses
+// View Buses (unchanged)
 void viewBuses() {
     FILE *file = fopen("buses.dat", "rb");
     if (!file) {
@@ -195,31 +215,51 @@ void viewBuses() {
     fclose(file);
 }
 
-// Book Seat
+// Book Seat (unchanged)
 void bookSeat(int user_id) {
     int bus_id, seat_number;
     char date[20];
+    int c;
 
     printf("Enter Bus ID: ");
-    scanf("%d", &bus_id);
+    if (scanf("%d", &bus_id) != 1) return;
+    while ((c = getchar()) != '\n' && c != EOF);
+
+    printf("Enter Reservation Date (DD-MM-YYYY): ");
+    if (scanf("%s", date) != 1) return;
+    while ((c = getchar()) != '\n' && c != EOF);
+
     if (!isBusAvailable(bus_id)) {
         printf("Invalid Bus ID or no available seats.\n");
         return;
     }
-    printf("Enter Seat Number: ");
-    scanf("%d", &seat_number);
-    printf("Enter Reservation Date (DD-MM-YYYY): ");
-    scanf("%s", date);
 
+    printf("Enter Seat Number: ");
+    if (scanf("%d", &seat_number) != 1) return;
+    while ((c = getchar()) != '\n' && c != EOF);
+
+    // 1. Check if seat number is valid (e.g., 1 to 50)
+    if (!isValidSeatNumber(bus_id, seat_number)) {
+        printf("Invalid Seat Number. Please choose a seat between 1 and the total number of seats.\n");
+        return;
+    }
+
+    // 2. Check if the seat is already reserved for this bus on this date
+    if (isSeatAlreadyReserved(bus_id, seat_number, date)) {
+        printf("Seat %d is already reserved for bus %d on %s. Please choose another seat.\n", seat_number, bus_id, date);
+        return;
+    }
+    
+    // 3. Proceed with reservation
     Reservation reservation = {generateReservationID(), bus_id, user_id, seat_number, ""};
     strcpy(reservation.reservation_date, date);
 
     saveReservation(reservation);
-    updateBusAvailability(bus_id, seat_number, -1);
+    updateBusAvailability(bus_id, -1); // Decrement available seats count
     printf("Reservation successful! Reservation ID: %d\n", reservation.reservation_id);
 }
 
-// Save Reservation to File
+// Save Reservation to File (unchanged)
 void saveReservation(Reservation reservation) {
     FILE *file = fopen("reservations.dat", "ab");
     if (!file) {
@@ -230,7 +270,41 @@ void saveReservation(Reservation reservation) {
     fclose(file);
 }
 
-// View Reservations
+// NEW FUNCTION: Bus ID এর ভিত্তিতে বাসের বিবরণ খুঁজে বের করে
+void getBusDetails(int bus_id, char *bus_name, char *route, char *dep_time, char *arr_time) {
+    FILE *file = fopen("buses.dat", "rb");
+    if (!file) {
+        strcpy(bus_name, "N/A");
+        strcpy(route, "N/A");
+        strcpy(dep_time, "N/A");
+        strcpy(arr_time, "N/A");
+        return;
+    }
+
+    Bus bus;
+    int found = 0;
+    while (fread(&bus, sizeof(Bus), 1, file)) {
+        if (bus.bus_id == bus_id) {
+            strcpy(bus_name, bus.bus_name);
+            strcpy(route, bus.route);
+            strcpy(dep_time, bus.departure_time);
+            strcpy(arr_time, bus.arrival_time);
+            found = 1;
+            break;
+        }
+    }
+    fclose(file);
+
+    if (!found) {
+        strcpy(bus_name, "Unknown Bus");
+        strcpy(route, "Unknown Route");
+        strcpy(dep_time, "N/A");
+        strcpy(arr_time, "N/A");
+    }
+}
+
+
+// View Reservations (MODIFIED: Now shows Bus Details)
 void viewReservations(int user_id) {
     FILE *file = fopen("reservations.dat", "rb");
     if (!file) {
@@ -239,17 +313,32 @@ void viewReservations(int user_id) {
     }
 
     Reservation reservation;
+    char bus_name[50], route[100], dep_time[10], arr_time[10];
+
     printf("\n--- My Reservations ---\n");
+    printf("%-10s | %-15s | %-20s | %-10s | %-10s | %-8s | %-12s\n", 
+           "Res ID", "Bus Name", "Route", "Dept Time", "Arr Time", "Seat", "Date");
+    printf("------------------------------------------------------------------------------------------\n");
+
     while (fread(&reservation, sizeof(Reservation), 1, file)) {
         if (reservation.user_id == user_id) {
-            printf("Reservation ID: %d | Bus ID: %d | Seat: %d | Date: %s\n",
-                   reservation.reservation_id, reservation.bus_id, reservation.seat_number, reservation.reservation_date);
+            // Get bus details using the reservation's bus_id
+            getBusDetails(reservation.bus_id, bus_name, route, dep_time, arr_time);
+
+            printf("%-10d | %-15s | %-20s | %-10s | %-10s | %-8d | %-12s\n",
+                   reservation.reservation_id, 
+                   bus_name, 
+                   route, 
+                   dep_time, 
+                   arr_time,
+                   reservation.seat_number, 
+                   reservation.reservation_date);
         }
     }
     fclose(file);
 }
 
-// Authenticate User
+// Authenticate User (unchanged)
 int authenticateUser(char *email, char *password) {
     FILE *file = fopen("users.dat", "rb");
     if (!file) {
@@ -268,7 +357,7 @@ int authenticateUser(char *email, char *password) {
     return -1;
 }
 
-// Register User
+// Register User (unchanged)
 void registerUser() {
     Passenger user;
     user.user_id = generateUserID();
@@ -290,11 +379,12 @@ void registerUser() {
     printf("Registration successful! Your User ID is %d\n", user.user_id);
 }
 
-// Generate Unique IDs
+// Generate Unique IDs (unchanged)
 int generateReservationID() { return rand() % 10000; }
 int generateUserID() { return rand() % 10000; }
 
-// Check Bus Availability
+
+// Check Bus Availability (unchanged)
 int isBusAvailable(int bus_id) {
     FILE *file = fopen("buses.dat", "rb");
     if (!file) return 0;
@@ -310,8 +400,47 @@ int isBusAvailable(int bus_id) {
     return 0;
 }
 
-// Update Bus Availability
-void updateBusAvailability(int bus_id, int seat_number, int increment) {
+
+// Check if Seat is Already Reserved (unchanged)
+int isSeatAlreadyReserved(int bus_id, int seat_number, char *date) {
+    FILE *file = fopen("reservations.dat", "rb");
+    if (!file) return 0;
+
+    Reservation res;
+    while (fread(&res, sizeof(Reservation), 1, file)) {
+        if (res.bus_id == bus_id && res.seat_number == seat_number && strcmp(res.reservation_date, date) == 0) {
+            fclose(file);
+            return 1;
+        }
+    }
+
+    fclose(file);
+    return 0;
+}
+
+// Check if Seat Number is valid (unchanged)
+int isValidSeatNumber(int bus_id, int seat_number) {
+    FILE *file = fopen("buses.dat", "rb");
+    if (!file) return 0; 
+
+    Bus bus;
+    while (fread(&bus, sizeof(Bus), 1, file)) {
+        if (bus.bus_id == bus_id) {
+            fclose(file);
+            if (seat_number > 0 && seat_number <= bus.total_seats) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }
+    }
+    fclose(file);
+    return 0;
+}
+
+
+// Update Bus Availability (unchanged)
+void updateBusAvailability(int bus_id, int increment) {
     FILE *file = fopen("buses.dat", "rb+");
     if (!file) {
         printf("Error opening file.\n");
@@ -319,10 +448,14 @@ void updateBusAvailability(int bus_id, int seat_number, int increment) {
     }
 
     Bus bus;
+    long current_pos;
+
     while (fread(&bus, sizeof(Bus), 1, file)) {
         if (bus.bus_id == bus_id) {
             bus.available_seats += increment;
+            
             fseek(file, -sizeof(Bus), SEEK_CUR);
+            
             fwrite(&bus, sizeof(Bus), 1, file);
             break;
         }
