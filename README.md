@@ -70,39 +70,39 @@ This project helps students practice:
 
 ---
 
-🐞 Common Errors Faced During Development
+## 🐞 Common Errors Faced During Development
 
-Here are the realistic and commonly expected errors that occur while building a Bus Reservation System in C:
+Here are the **realistic and commonly expected errors** that occur while building a Bus Reservation System in C:
 
-1️⃣ File Not Found (data.txt missing)
+### 1️⃣ File Not Found (data.txt missing)
 
-The program stores booking information inside data.txt. If the file is missing, the program cannot load or save data.
+The program stores booking information inside `data.txt`. If the file is missing, the program cannot load or save data.
 
-Fix: Create an empty data.txt file in the project folder.
+* **Fix:** Create an empty `data.txt` file in the project folder.
 
-2️⃣ Wrong Input Crash (Letters instead of numbers)
+### 2️⃣ Wrong Input Crash (Letters instead of numbers)
 
 When the program expects a number but the user enters text, it may crash.
 
-Fix: Validate numeric input and clear the buffer.
+* **Fix:** Validate numeric input and clear the buffer.
 
-3️⃣ Seat Number Out of Range
+### 3️⃣ Seat Number Out of Range
 
 If the user enters an invalid seat number (too high or low), the program may behave incorrectly.
 
-Fix: Add range checks to ensure the seat number is valid.
+* **Fix:** Add range checks to ensure the seat number is valid.
 
-4️⃣ Compilation Errors (Missing function prototypes)
+### 4️⃣ Compilation Errors (Missing function prototypes)
 
 Errors appear when functions are used without being declared, or header file is not included properly.
 
-Fix: Ensure all function prototypes are included in bus.h.
+* **Fix:** Ensure all function prototypes are included in `bus.h`.
 
-5️⃣ Data Overwriting (Wrong file mode)
+### 5️⃣ Data Overwriting (Wrong file mode)
 
-Using "w" instead of "a" overwrites previous booking data.
+Using `"w"` instead of `"a"` overwrites previous booking data.
 
-Fix: Use "a" mode when adding new records.
+* **Fix:** Use `"a"` mode when adding new records.
 
 ---
 ## 🤝 Contribution
