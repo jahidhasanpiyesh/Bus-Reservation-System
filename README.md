@@ -1,4 +1,4 @@
-# 🚌 Bus Reservation System in C
+# 🚌 Online Bus Reservation System in C
 
 A simple and efficient **Bus Reservation System** built using the **C programming language**. This project provides a console-based ticket booking experience where users can view buses, check seat availability, book tickets, and manage reservations.
 
