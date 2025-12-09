@@ -70,12 +70,6 @@ This project helps students practice:
 
 ---
 
-## 🤝 Contribution
-
-Feel free to fork the repository and submit pull requests to improve features or fix bugs.
-
----
-
 🐞 Common Errors Faced During Development
 
 Here are the realistic and commonly expected errors that occur while building a Bus Reservation System in C:
@@ -109,6 +103,13 @@ Fix: Ensure all function prototypes are included in bus.h.
 Using "w" instead of "a" overwrites previous booking data.
 
 Fix: Use "a" mode when adding new records.
+
+---
+## 🤝 Contribution
+
+Feel free to fork the repository and submit pull requests to improve features or fix bugs.
+
+---
 
 ## 👤 Author
 
