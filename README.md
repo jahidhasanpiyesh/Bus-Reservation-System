@@ -111,9 +111,23 @@ Feel free to fork the repository and submit pull requests to improve features or
 
 ---
 
+## 🛡️ License
+
+This project is licensed under the **GNU General Public License v3.0**. 
+
+### ⚖️ Permissions under GPLv3:
+* **Commercial Use:** You can use this software for commercial purposes.
+* **Modification:** You can modify the code, but you must keep the source code open.
+* **Distribution:** You can distribute the original or modified code.
+* **Credit:** You must give credit to the original author (Md Jahid Hasan).
+
+See the [LICENSE](LICENSE) file for more details.
+
+---
+
 ## 👤 Author
 
-- Developer: Md Jahid Hasan  
-- Email: jahidhasanpiyesh@gmail.com  
-- LinkedIn: [https://www.linkedin.com/in/md-jahid-hasan-9418b9298](https://www.linkedin.com/in/md-jahid-hasan-9418b9298)  
-- Portfolio: [https://jahidhasanpiyesh.github.io/](https://jahidhasanpiyesh.github.io/)  
+- **Developer:** Md Jahid Hasan  
+- **Email:** jahidhasanpiyesh@gmail.com  
+- **LinkedIn:** [Md Jahid Hasan](https://www.linkedin.com/in/md-jahid-hasan-9418b9298)  
+- **Portfolio:** [My Portfolio](https://jahidhasanpiyesh.github.io/)
